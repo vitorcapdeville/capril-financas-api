@@ -1,0 +1,25 @@
+# Arquivos de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bibliotecas instaladas localmente
+venv/
+*.venv
+env/
+*.env
+ENV/
+
+# Arquivos de log
+*.log
+
+# Arquivos de banco de dados SQLite
+*.sqlite
+
+# Configurações do VS Code
+.vscode/
+
+.env
+
+.github/
+.devcontainer/
