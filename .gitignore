@@ -20,6 +20,3 @@ ENV/
 .vscode/
 
 .env
-
-.github/
-.devcontainer/
