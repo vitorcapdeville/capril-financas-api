@@ -46,22 +46,24 @@ def adicionar_insumo(
     session.refresh(insumo)
     return insumo
 
+
 @app.delete("/fornecedor/{nome}")
 def delete_fornecedor(nome: str):
     with Session(engine) as session:
         nome = session.get(Fornecedor, nome)
         if not nome:
-            raise HTTPException(status_code=404, detail= "Esse nome não foi encontrado.")
+            raise HTTPException(status_code=404, detail="Esse nome não foi encontrado.")
         session.delete(nome)
         session.commit()
         return {"ok": True}
-    
+
+
 @app.delete("/insumo/{nome}")
 def delete_insumo(insumo: str):
     with Session(engine) as session:
         insumo = session.get(Insumo, insumo)
         if not insumo:
-            raise HTTPException(status_code=404, detail= "Esse nome não foi encontrado.")
+            raise HTTPException(status_code=404, detail="Esse nome não foi encontrado.")
         session.delete(insumo)
         session.commit()
         return {"ok": True}
