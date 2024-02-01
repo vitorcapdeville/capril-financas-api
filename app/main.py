@@ -1,7 +1,9 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy_utils import database_exists
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from .database import create_tables, engine
@@ -12,6 +14,18 @@ if not database_exists(engine.url):
     create_tables()
 
 app = FastAPI()
+
+origins = [
+    "http://127.0.0.1:5500"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -31,8 +45,11 @@ def read_fornecedores(
 def cadastrar_fornecedor(
     fornecedor: Fornecedor, session: Annotated[Session, Depends(get_session)]
 ) -> Fornecedor:
-    session.add(fornecedor)
-    session.commit()
+    try:
+        session.add(fornecedor)
+        session.commit()
+    except IntegrityError:
+        raise HTTPException(status_code= 409, detail= "Já existe um fornecedor com esse nome.") 
     session.refresh(fornecedor)
     return fornecedor
 
@@ -41,7 +58,11 @@ def cadastrar_fornecedor(
 def adicionar_insumo(
     insumo: Insumo, session: Annotated[Session, Depends(get_session)]
 ) -> Insumo:
-    session.add(insumo)
+    try:
+        session.add(insumo)
+        session.commit()
+    except IntegrityError:
+        raise HTTPException(status_code= 409, detail= "Já existe um insumo com esse nome.")
     session.commit()
     session.refresh(insumo)
     return insumo
