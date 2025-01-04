@@ -8,7 +8,17 @@ from sqlmodel import Session, select
 
 from .database import create_tables, engine
 from .dependencies import get_session
-from .models import Cliente, Fornecedor, Produto
+from .models import (
+    Cliente,
+    ClienteCreate,
+    ClientePublic,
+    Fornecedor,
+    FornecedorCreate,
+    FornecedorPublic,
+    Produto,
+    ProdutoCreate,
+    ProdutoPublic,
+)
 
 if not database_exists(engine.url):
     create_tables()
@@ -27,24 +37,27 @@ app.add_middleware(
 
 
 @app.get("/fornecedores")
-def read_fornecedores(session: Annotated[Session, Depends(get_session)]) -> list[Fornecedor]:
+def read_fornecedores(session: Annotated[Session, Depends(get_session)]) -> list[FornecedorPublic]:
     fornecedores = session.exec(select(Fornecedor)).all()
     return fornecedores
 
 
 @app.post("/fornecedor")
-def cadastrar_fornecedor(fornecedor: Fornecedor, session: Annotated[Session, Depends(get_session)]) -> Fornecedor:
+def cadastrar_fornecedor(
+    fornecedor: FornecedorCreate, session: Annotated[Session, Depends(get_session)]
+) -> FornecedorPublic:
+    db_fornecedor = Fornecedor.model_validate(fornecedor)
     try:
-        session.add(fornecedor)
+        session.add(db_fornecedor)
         session.commit()
     except IntegrityError:
         raise HTTPException(status_code=409, detail="Já existe um fornecedor com esse nome.")
-    session.refresh(fornecedor)
-    return fornecedor
+    session.refresh(db_fornecedor)
+    return db_fornecedor
 
 
 @app.delete("/fornecedor/{fornecedor_id}")
-def delete_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(get_session)]) -> Fornecedor:
+def delete_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(get_session)]) -> FornecedorPublic:
     fornecedor = session.get(Fornecedor, fornecedor_id)
     if not fornecedor:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")
@@ -54,24 +67,25 @@ def delete_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(ge
 
 
 @app.get("/produtos")
-def read_produtos(session: Annotated[Session, Depends(get_session)]) -> list[Produto]:
+def read_produtos(session: Annotated[Session, Depends(get_session)]) -> list[ProdutoPublic]:
     produtos = session.exec(select(Produto)).all()
     return produtos
 
 
 @app.post("/produto")
-def cadastrar_produto(produto: Produto, session: Annotated[Session, Depends(get_session)]) -> Produto:
+def cadastrar_produto(produto: ProdutoCreate, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
+    db_produto = Produto.model_validate(produto)
     try:
-        session.add(produto)
+        session.add(db_produto)
         session.commit()
     except IntegrityError:
         raise HTTPException(status_code=409, detail="Já existe um produto com esse nome.")
-    session.refresh(produto)
-    return produto
+    session.refresh(db_produto)
+    return db_produto
 
 
 @app.delete("/produto/{produto_id}")
-def delete_produto(produto_id: int, session: Annotated[Session, Depends(get_session)]) -> Produto:
+def delete_produto(produto_id: int, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
     produto = session.get(Produto, produto_id)
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
@@ -81,24 +95,25 @@ def delete_produto(produto_id: int, session: Annotated[Session, Depends(get_sess
 
 
 @app.get("/clientes")
-def read_clientes(session: Annotated[Session, Depends(get_session)]) -> list[Cliente]:
+def read_clientes(session: Annotated[Session, Depends(get_session)]) -> list[ClientePublic]:
     clientes = session.exec(select(Cliente)).all()
     return clientes
 
 
 @app.post("/cliente")
-def cadastrar_cliente(cliente: Cliente, session: Annotated[Session, Depends(get_session)]) -> Cliente:
+def cadastrar_cliente(cliente: ClienteCreate, session: Annotated[Session, Depends(get_session)]) -> ClientePublic:
+    db_cliente = Cliente.model_validate(cliente)
     try:
-        session.add(cliente)
+        session.add(db_cliente)
         session.commit()
     except IntegrityError:
         raise HTTPException(status_code=409, detail="Já existe um cliente com esse nome.")
-    session.refresh(cliente)
-    return cliente
+    session.refresh(db_cliente)
+    return db_cliente
 
 
 @app.delete("/cliente/{cliente_id}")
-def delete_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> Cliente:
+def delete_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> ClientePublic:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")

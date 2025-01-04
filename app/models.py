@@ -4,9 +4,20 @@ from typing import Optional
 from sqlmodel import Field, SQLModel
 
 
-class Fornecedor(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class FornecedorBase(SQLModel):
     nome: str
+
+
+class FornecedorCreate(FornecedorBase):
+    pass
+
+
+class Fornecedor(FornecedorBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class FornecedorPublic(FornecedorBase):
+    id: int
 
 
 class Compra(SQLModel, table=True):
@@ -18,22 +29,45 @@ class Compra(SQLModel, table=True):
     fornecedor_id: int = Field(foreign_key="fornecedor.id")
 
 
-class Produto(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class ProdutoBase(SQLModel):
     nome: str
     peso_em_gramas: float
 
 
-class Cliente(SQLModel, table=True):
+class ProdutoCreate(ProdutoBase):
+    pass
+
+
+class Produto(ProdutoBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class ProdutoPublic(ProdutoBase):
+    id: int
+
+
+class ClienteBase(SQLModel):
     nome: str
     email: str
     categoria: str
     endereco: str
 
 
+class ClienteCreate(ClienteBase):
+    pass
+
+
+class Cliente(ClienteBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class ClientePublic(ClienteBase):
+    id: int
+
+
 class Item(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+
     preco_unitario: float
     quantidade: int
 
@@ -44,6 +78,6 @@ class Item(SQLModel, table=True):
 class Venda(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     data_venda: datetime
-    data_pagamento: Optional[datetime] = Field(default=None)
+    data_pagamento: Optional[datetime] = None
 
     cliente_id: int = Field(foreign_key="cliente.id")
