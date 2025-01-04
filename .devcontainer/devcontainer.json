@@ -13,23 +13,18 @@
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "pip3 install --user -r requirements.txt",
+  
   "customizations": {
     "vscode": {
-      "settings" : {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-          "source.organizeImports": true
-        },
-        "isort.args": [
-          "--profile",
-          "black"
-        ]
-      },
       "extensions": [
-        "ms-python.black-formatter",
-        "ms-python.isort"
-      ]
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnType": true
+        }
+      }
     }
   }
 

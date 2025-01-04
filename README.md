@@ -34,7 +34,3 @@ Pull requests são bem-vindos. Para mudanças importantes, por favor, abra uma i
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-```
-
-Lembre-se de substituir as partes do texto que são específicas para o seu projeto.
-```

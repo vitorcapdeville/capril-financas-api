@@ -1,40 +1,49 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class Fornecedor(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
+
+
+class Compra(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    data_compra: datetime
+    valor: float
     categoria: str
 
-
-class Insumo(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    nome: str
+    fornecedor_id: int = Field(foreign_key="fornecedor.id")
 
 
 class Produto(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
+    peso_em_gramas: float
 
 
-class CompraInsumo(SQLModel, table=True):
+class Cliente(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome: str
+    email: str
+    categoria: str
+    endereco: str
+
+
+class Item(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     preco_unitario: float
     quantidade: int
-    data_compra: datetime
-
-    insumo_id: int = Field(foreign_key="insumo.id")
-    insumo: Insumo = Relationship()
-
-
-class VendaProduto(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    preco_unitario: float
-    quantidade: int
-    data_venda: datetime
 
     produto_id: int = Field(foreign_key="produto.id")
-    produto: Produto = Relationship()
+    venda_id: int = Field(foreign_key="venda.id")
+
+
+class Venda(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    data_venda: datetime
+    data_pagamento: Optional[datetime] = Field(default=None)
+
+    cliente_id: int = Field(foreign_key="cliente.id")
