@@ -5,7 +5,7 @@ from sqlmodel import Field, SQLModel
 
 
 class FornecedorBase(SQLModel):
-    nome: str
+    nome: str = Field(unique=True)
 
 
 class FornecedorCreate(FornecedorBase):

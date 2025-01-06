@@ -43,3 +43,8 @@ def populate_tables():
         session.add(item2)
 
         session.commit()
+
+
+def init_database():
+    create_tables()
+    populate_tables()

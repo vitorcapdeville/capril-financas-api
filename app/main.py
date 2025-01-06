@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils import database_exists
 from sqlmodel import Session, select
 
-from .database import create_tables, engine
+from .database import init_database, engine
 from .dependencies import get_session
 from .models import (
     Cliente,
@@ -21,7 +21,7 @@ from .models import (
 )
 
 if not database_exists(engine.url):
-    create_tables()
+    init_database()
 
 app = FastAPI()
 
