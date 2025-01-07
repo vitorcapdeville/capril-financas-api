@@ -75,6 +75,14 @@ def read_produtos(session: Annotated[Session, Depends(get_session)]) -> list[Pro
     return produtos
 
 
+@app.get("/produto/{produto_id}")
+def read_produto(produto_id: int, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
+    produto = session.get(Produto, produto_id)
+    if not produto:
+        raise HTTPException(status_code=404, detail="Produto não encontrado.")
+    return produto
+
+
 @app.post("/produto")
 def cadastrar_produto(produto: ProdutoCreate, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
     db_produto = Produto.model_validate(produto)
@@ -101,6 +109,14 @@ def delete_produto(produto_id: int, session: Annotated[Session, Depends(get_sess
 def read_clientes(session: Annotated[Session, Depends(get_session)]) -> list[ClientePublic]:
     clientes = session.exec(select(Cliente)).all()
     return clientes
+
+
+@app.get("/cliente/{cliente_id}")
+def read_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> ClientePublic:
+    cliente = session.get(Cliente, cliente_id)
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado.")
+    return cliente
 
 
 @app.post("/cliente")
