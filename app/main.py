@@ -19,6 +19,7 @@ from .models import (
     FornecedorCreate,
     FornecedorPublic,
     Item,
+    ItemCreate,
     Produto,
     ProdutoCreate,
     ProdutoPublic,
@@ -177,12 +178,21 @@ def read_vendas(session: Annotated[Session, Depends(get_session)]) -> list[Venda
     return vendas
 
 
+@app.get("/venda/{venda_id}")
+def read_venda(venda_id: int, session: Annotated[Session, Depends(get_session)]) -> VendaPublic:
+    venda = session.get(Venda, venda_id)
+    if not venda:
+        raise HTTPException(status_code=404, detail="Venda não encontrada.")
+    return venda
+
+
 @app.post("/venda")
 def cadastrar_venda(
-    venda: VendaCreate, items: list[Item], session: Annotated[Session, Depends(get_session)]
+    venda: VendaCreate, items: list[ItemCreate], session: Annotated[Session, Depends(get_session)]
 ) -> VendaPublic:
     db_venda = Venda.model_validate(venda)
-    db_venda.items = items
+    db_items = [Item.model_validate(item) for item in items]
+    db_venda.items = db_items
     session.add(db_venda)
     session.commit()
     session.refresh(db_venda)

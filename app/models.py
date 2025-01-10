@@ -76,16 +76,27 @@ class ClientePublic(ClienteBase):
     id: int
 
 
-class Item(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-
+class ItemBase(SQLModel):
     preco_unitario: float
     quantidade: int
+    produto_id: int
+
+
+class ItemCreate(ItemBase):
+    pass
+
+
+class Item(ItemBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
 
     produto_id: int = Field(foreign_key="produto.id")
-    venda_id: int = Field(foreign_key="venda.id")
+    venda_id: Optional[int] = Field(default=None, foreign_key="venda.id")
 
     venda: "Venda" = Relationship(back_populates="items")
+
+
+class ItemPublic(ItemBase):
+    id: int
 
 
 class VendaBase(SQLModel):
@@ -107,3 +118,5 @@ class Venda(VendaBase, table=True):
 
 class VendaPublic(VendaBase):
     id: int
+
+    items: list[Item]
