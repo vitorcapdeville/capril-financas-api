@@ -6,18 +6,25 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils import database_exists
 from sqlmodel import Session, select
 
-from .database import init_database, engine
+from .database import engine, init_database
 from .dependencies import get_session
 from .models import (
     Cliente,
     ClienteCreate,
     ClientePublic,
+    Compra,
+    CompraCreate,
+    CompraPublic,
     Fornecedor,
     FornecedorCreate,
     FornecedorPublic,
+    Item,
     Produto,
     ProdutoCreate,
     ProdutoPublic,
+    Venda,
+    VendaCreate,
+    VendaPublic,
 )
 
 if not database_exists(engine.url):
@@ -139,3 +146,44 @@ def delete_cliente(cliente_id: int, session: Annotated[Session, Depends(get_sess
     session.delete(cliente)
     session.commit()
     return cliente
+
+
+@app.get("/compras")
+def read_compras(session: Annotated[Session, Depends(get_session)]) -> list[CompraPublic]:
+    compras = session.exec(select(Compra)).all()
+    return compras
+
+
+@app.get("/compra/{compra_id}")
+def read_compra(compra_id: int, session: Annotated[Session, Depends(get_session)]) -> CompraPublic:
+    compra = session.get(Compra, compra_id)
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra não encontrada.")
+    return compra
+
+
+@app.post("/compra")
+def cadastrar_compra(compra: CompraCreate, session: Annotated[Session, Depends(get_session)]) -> CompraPublic:
+    db_compra = Compra.model_validate(compra)
+    session.add(db_compra)
+    session.commit()
+    session.refresh(db_compra)
+    return db_compra
+
+
+@app.get("/vendas")
+def read_vendas(session: Annotated[Session, Depends(get_session)]) -> list[VendaPublic]:
+    vendas = session.exec(select(Venda)).all()
+    return vendas
+
+
+@app.post("/venda")
+def cadastrar_venda(
+    venda: VendaCreate, items: list[Item], session: Annotated[Session, Depends(get_session)]
+) -> VendaPublic:
+    db_venda = Venda.model_validate(venda)
+    db_venda.items = items
+    session.add(db_venda)
+    session.commit()
+    session.refresh(db_venda)
+    return db_venda

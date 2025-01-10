@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class FornecedorBase(SQLModel):
@@ -20,13 +20,24 @@ class FornecedorPublic(FornecedorBase):
     id: int
 
 
-class Compra(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class CompraBase(SQLModel):
     data_compra: datetime
     valor: float
     categoria: str
+    fornecedor_id: int
 
-    fornecedor_id: int = Field(foreign_key="fornecedor.id")
+
+class CompraCreate(CompraBase):
+    pass
+
+
+class Compra(CompraBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    fornecedor_id: Optional[int] = Field(default=None, foreign_key="fornecedor.id")
+
+
+class CompraPublic(CompraBase):
+    id: int
 
 
 class ProdutoBase(SQLModel):
@@ -74,10 +85,25 @@ class Item(SQLModel, table=True):
     produto_id: int = Field(foreign_key="produto.id")
     venda_id: int = Field(foreign_key="venda.id")
 
+    venda: "Venda" = Relationship(back_populates="items")
 
-class Venda(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+
+class VendaBase(SQLModel):
     data_venda: datetime
     data_pagamento: Optional[datetime] = None
+    cliente_id: int
 
-    cliente_id: int = Field(foreign_key="cliente.id")
+
+class VendaCreate(VendaBase):
+    pass
+
+
+class Venda(VendaBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    cliente_id: Optional[int] = Field(default=None, foreign_key="cliente.id")
+
+    items: list["Item"] = Relationship(back_populates="venda")
+
+
+class VendaPublic(VendaBase):
+    id: int
