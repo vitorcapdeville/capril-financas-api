@@ -53,6 +53,14 @@ def read_fornecedores(session: Annotated[Session, Depends(get_session)]) -> list
     return fornecedores
 
 
+@app.get("/fornecedor/{fornecedor_id}")
+def read_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(get_session)]) -> FornecedorPublic:
+    fornecedor = session.get(Fornecedor, fornecedor_id)
+    if not fornecedor:
+        raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")
+    return fornecedor
+
+
 @app.post("/fornecedor")
 def cadastrar_fornecedor(
     fornecedor: FornecedorCreate, session: Annotated[Session, Depends(get_session)]
