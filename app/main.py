@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy_utils import database_exists
 from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.db import engine, init_db
+from app.dependencies import get_current_user
 from app.routes import clientes, compras, fornecedores, login, produtos, vendas
 
 if not database_exists(engine.url):
@@ -29,9 +30,9 @@ if settings.all_cors_origins:
     )
 
 
-app.include_router(clientes.router)
-app.include_router(compras.router)
-app.include_router(fornecedores.router)
-app.include_router(produtos.router)
-app.include_router(vendas.router)
+app.include_router(clientes.router, dependencies=[Depends(get_current_user)])
+app.include_router(compras.router, dependencies=[Depends(get_current_user)])
+app.include_router(fornecedores.router, dependencies=[Depends(get_current_user)])
+app.include_router(produtos.router, dependencies=[Depends(get_current_user)])
+app.include_router(vendas.router, dependencies=[Depends(get_current_user)])
 app.include_router(login.router)
