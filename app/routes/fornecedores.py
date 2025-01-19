@@ -1,10 +1,9 @@
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from app.dependencies import get_session
+from app.dependencies import SessionDep
 from app.models import (
     Fornecedor,
     FornecedorCreate,
@@ -15,13 +14,13 @@ router = APIRouter(prefix="/fornecedores", tags=["fornecedores"])
 
 
 @router.get("/")
-def read_fornecedores(session: Annotated[Session, Depends(get_session)]) -> list[FornecedorPublic]:
+def read_fornecedores(session: SessionDep) -> list[FornecedorPublic]:
     fornecedores = session.exec(select(Fornecedor)).all()
     return fornecedores
 
 
 @router.get("/{fornecedor_id}")
-def read_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(get_session)]) -> FornecedorPublic:
+def read_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic:
     fornecedor = session.get(Fornecedor, fornecedor_id)
     if not fornecedor:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")
@@ -30,7 +29,7 @@ def read_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(get_
 
 @router.post("/")
 def cadastrar_fornecedor(
-    fornecedor: FornecedorCreate, session: Annotated[Session, Depends(get_session)]
+    fornecedor: FornecedorCreate, session: SessionDep
 ) -> FornecedorPublic:
     db_fornecedor = Fornecedor.model_validate(fornecedor)
     try:
@@ -43,7 +42,7 @@ def cadastrar_fornecedor(
 
 
 @router.delete("/{fornecedor_id}")
-def delete_fornecedor(fornecedor_id: int, session: Annotated[Session, Depends(get_session)]) -> FornecedorPublic:
+def delete_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic:
     fornecedor = session.get(Fornecedor, fornecedor_id)
     if not fornecedor:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")

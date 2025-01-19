@@ -1,10 +1,9 @@
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from app.dependencies import get_session
+from app.dependencies import SessionDep
 from app.models import (
     Cliente,
     ClienteCreate,
@@ -15,13 +14,13 @@ router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 
 @router.get("/")
-def read_clientes(session: Annotated[Session, Depends(get_session)]) -> list[ClientePublic]:
+def read_clientes(session: SessionDep) -> list[ClientePublic]:
     clientes = session.exec(select(Cliente)).all()
     return clientes
 
 
 @router.get("/{cliente_id}")
-def read_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> ClientePublic:
+def read_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")
@@ -29,7 +28,7 @@ def read_cliente(cliente_id: int, session: Annotated[Session, Depends(get_sessio
 
 
 @router.post("/")
-def cadastrar_cliente(cliente: ClienteCreate, session: Annotated[Session, Depends(get_session)]) -> ClientePublic:
+def cadastrar_cliente(cliente: ClienteCreate, session: SessionDep) -> ClientePublic:
     db_cliente = Cliente.model_validate(cliente)
     try:
         session.add(db_cliente)
@@ -41,7 +40,7 @@ def cadastrar_cliente(cliente: ClienteCreate, session: Annotated[Session, Depend
 
 
 @router.delete("/{cliente_id}")
-def delete_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> ClientePublic:
+def delete_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")

@@ -4,4 +4,5 @@ sqlmodel
 python-dotenv
 pydantic_settings
 sqlalchemy-utils
-
+pyjwt<3.0.0,>=2.8.0
+passlib[bcrypt]<2.0.0,>=1.7.4

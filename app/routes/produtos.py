@@ -1,10 +1,9 @@
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, select
+from sqlmodel import select
 
-from app.dependencies import get_session
+from app.dependencies import SessionDep
 from app.models import (
     Produto,
     ProdutoCreate,
@@ -15,13 +14,13 @@ router = APIRouter(prefix="/produtos", tags=["produtos"])
 
 
 @router.get("/")
-def read_produtos(session: Annotated[Session, Depends(get_session)]) -> list[ProdutoPublic]:
+def read_produtos(session: SessionDep) -> list[ProdutoPublic]:
     produtos = session.exec(select(Produto)).all()
     return produtos
 
 
 @router.get("/{produto_id}")
-def read_produto(produto_id: int, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
+def read_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
     produto = session.get(Produto, produto_id)
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
@@ -29,7 +28,7 @@ def read_produto(produto_id: int, session: Annotated[Session, Depends(get_sessio
 
 
 @router.post("/")
-def cadastrar_produto(produto: ProdutoCreate, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
+def cadastrar_produto(produto: ProdutoCreate, session: SessionDep) -> ProdutoPublic:
     db_produto = Produto.model_validate(produto)
     try:
         session.add(db_produto)
@@ -41,7 +40,7 @@ def cadastrar_produto(produto: ProdutoCreate, session: Annotated[Session, Depend
 
 
 @router.delete("/{produto_id}")
-def delete_produto(produto_id: int, session: Annotated[Session, Depends(get_session)]) -> ProdutoPublic:
+def delete_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
     produto = session.get(Produto, produto_id)
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
