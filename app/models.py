@@ -166,10 +166,10 @@ class UpdatePassword(SQLModel):
 
 # Database model, database table inferred from class name
 class User(UserBase, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
 
 # Properties to return via API, id is always required
 class UserPublic(UserBase):
-    id: uuid.UUID
+    id: int
