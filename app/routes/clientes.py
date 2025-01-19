@@ -12,7 +12,7 @@ from app.models import (
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 
-@router.get("/")
+@router.get("")
 def read_clientes(session: SessionDep) -> list[ClientePublic]:
     clientes = session.exec(select(Cliente)).all()
     return clientes

@@ -13,7 +13,7 @@ from app.models import (
 router = APIRouter(prefix="/produtos", tags=["produtos"])
 
 
-@router.get("/")
+@router.get("")
 def read_produtos(session: SessionDep) -> list[ProdutoPublic]:
     produtos = session.exec(select(Produto)).all()
     return produtos

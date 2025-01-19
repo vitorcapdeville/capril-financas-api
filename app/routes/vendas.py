@@ -7,7 +7,7 @@ from app.models import Item, ItemCreate, Venda, VendaCreate, VendaPublic
 router = APIRouter(prefix="/vendas", tags=["vendas"])
 
 
-@router.get("/")
+@router.get("")
 def read_vendas(session: SessionDep) -> list[VendaPublic]:
     vendas = session.exec(select(Venda)).all()
     return vendas

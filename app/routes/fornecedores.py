@@ -13,7 +13,7 @@ from app.models import (
 router = APIRouter(prefix="/fornecedores", tags=["fornecedores"])
 
 
-@router.get("/")
+@router.get("")
 def read_fornecedores(session: SessionDep) -> list[FornecedorPublic]:
     fornecedores = session.exec(select(Fornecedor)).all()
     return fornecedores

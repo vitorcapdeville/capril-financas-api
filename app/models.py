@@ -133,6 +133,7 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
+    email: str | None = None
 
 
 class UserBase(SQLModel):
