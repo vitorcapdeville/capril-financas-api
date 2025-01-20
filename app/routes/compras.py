@@ -20,7 +20,7 @@ def read_compras(session: SessionDep, query: str | None = None, skip: int = 0, l
         where_expression = Compra.categoria.like(f"%{query}%")
         statement = statement.where(where_expression)
         count_statement = count_statement.where(where_expression)
-    statement = statement.offset(skip).limit(limit)
+    statement = statement.order_by(Compra.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
     count = session.exec(count_statement).one()
     return ComprasPublic(data=data, count=count)

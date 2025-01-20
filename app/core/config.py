@@ -5,13 +5,11 @@ from typing import Annotated, Any, Literal
 from pydantic import (
     AnyUrl,
     BeforeValidator,
-    # HttpUrl,
-    # PostgresDsn,
     computed_field,
     model_validator,
 )
-from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy import URL
 from typing_extensions import Self
 
 
@@ -45,25 +43,25 @@ class Settings(BaseSettings):
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
 
     # SENTRY_DSN: HttpUrl | None = None
-    # POSTGRES_SERVER: str
-    # POSTGRES_PORT: int = 5432
-    # POSTGRES_USER: str
-    # POSTGRES_PASSWORD: str = ""
-    # POSTGRES_DB: str = ""
+    SQL_SERVER: str
+    SQL_PORT: int = 5432
+    SQL_USER: str
+    SQL_PASSWORD: str = ""
+    SQL_DB: str = ""
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def SQLALCHEMY_DATABASE_URI(self) -> MultiHostUrl:
-        # return "sqlite:///capril.db"
-        return MultiHostUrl.build(
-            scheme="sqlite",
-            # username=self.POSTGRES_USER,
-            # password=self.POSTGRES_PASSWORD,
-            host="/capril.db",  # self.POSTGRES_SERVER,
-            # port=self.POSTGRES_PORT,
-            # path=self.POSTGRES_DB,
+    def SQLALCHEMY_DATABASE_URI(self) -> URL:
+        return URL.create(
+            "mssql+pyodbc",
+            username=self.SQL_USER,
+            password=self.SQL_PASSWORD,
+            host=self.SQL_SERVER,
+            port=self.SQL_PORT,
+            database=self.SQL_DB,
+            query=dict(driver="ODBC Driver 18 for SQL Server"),
         )
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:

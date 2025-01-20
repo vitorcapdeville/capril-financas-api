@@ -7,7 +7,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 
 class FornecedorBase(SQLModel):
-    nome: str = Field(unique=True)
+    nome: str = Field(unique=True, max_length=50)
 
 
 class FornecedorCreate(FornecedorBase):

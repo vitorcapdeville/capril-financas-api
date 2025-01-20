@@ -15,7 +15,7 @@ def read_vendas(session: SessionDep, query: str | None = None, skip: int = 0, li
         where_expression = Venda.id.like(f"%{query}%")
         statement = statement.where(where_expression)
         count_statement = count_statement.where(where_expression)
-    statement = statement.offset(skip).limit(limit)
+    statement = statement.order_by(Venda.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
     count = session.exec(count_statement).one()
     return VendasPublic(data=data, count=count)

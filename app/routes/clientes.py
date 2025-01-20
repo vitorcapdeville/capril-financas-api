@@ -16,7 +16,7 @@ def read_clientes(session: SessionDep, query: str | None = None, skip: int = 0, 
         where_expression = Cliente.nome.like(f"%{query}%")
         statement = statement.where(where_expression)
         count_statement = count_statement.where(where_expression)
-    statement = statement.offset(skip).limit(limit)
+    statement = statement.order_by(Cliente.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
     count = session.exec(count_statement).one()
     return ClientesPublic(data=data, count=count)

@@ -23,7 +23,7 @@ def read_fornecedores(
         where_expression = Fornecedor.nome.like(f"%{query}%")
         statement = statement.where(where_expression)
         count_statement = count_statement.where(where_expression)
-    statement = statement.offset(skip).limit(limit)
+    statement = statement.order_by(Fornecedor.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
     count = session.exec(count_statement).one()
     return FornecedoresPublic(data=data, count=count)
