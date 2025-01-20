@@ -22,6 +22,11 @@ class FornecedorPublic(FornecedorBase):
     id: int
 
 
+class FornecedoresPublic(SQLModel):
+    data: list[FornecedorPublic]
+    count: int
+
+
 class CompraBase(SQLModel):
     data_compra: datetime
     valor: float
@@ -42,6 +47,11 @@ class CompraPublic(CompraBase):
     id: int
 
 
+class ComprasPublic(SQLModel):
+    data: list[CompraPublic]
+    count: int
+
+
 class ProdutoBase(SQLModel):
     nome: str
     peso_em_gramas: float
@@ -57,6 +67,11 @@ class Produto(ProdutoBase, table=True):
 
 class ProdutoPublic(ProdutoBase):
     id: int
+
+
+class ProdutosPublic(SQLModel):
+    data: list[ProdutoPublic]
+    count: int
 
 
 class ClienteBase(SQLModel):
@@ -76,6 +91,11 @@ class Cliente(ClienteBase, table=True):
 
 class ClientePublic(ClienteBase):
     id: int
+
+
+class ClientesPublic(SQLModel):
+    data: list[ClientePublic]
+    count: int
 
 
 class ItemBase(SQLModel):
@@ -122,6 +142,11 @@ class VendaPublic(VendaBase):
     id: int
 
     items: list[Item]
+
+
+class VendasPublic(SQLModel):
+    data: list[VendaPublic]
+    count: int
 
 
 # JSON payload containing access token

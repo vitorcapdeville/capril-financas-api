@@ -1,21 +1,25 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import select
+from sqlmodel import func, select
 
 from app.dependencies import SessionDep
-from app.models import (
-    Cliente,
-    ClienteCreate,
-    ClientePublic,
-)
+from app.models import Cliente, ClienteCreate, ClientePublic, ClientesPublic
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 
 @router.get("")
-def read_clientes(session: SessionDep) -> list[ClientePublic]:
-    clientes = session.exec(select(Cliente)).all()
-    return clientes
+def read_clientes(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> ClientesPublic:
+    count_statement = select(func.count()).select_from(Cliente)
+    statement = select(Cliente)
+    if query:
+        where_expression = Cliente.nome.like(f"%{query}%")
+        statement = statement.where(where_expression)
+        count_statement = count_statement.where(where_expression)
+    statement = statement.offset(skip).limit(limit)
+    data = session.exec(statement).all()
+    count = session.exec(count_statement).one()
+    return ClientesPublic(data=data, count=count)
 
 
 @router.get("/{cliente_id}")

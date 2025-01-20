@@ -1,16 +1,25 @@
 from fastapi import APIRouter, HTTPException
-from sqlmodel import select
+from sqlmodel import select, func
 
 from app.dependencies import SessionDep
-from app.models import Item, ItemCreate, Venda, VendaCreate, VendaPublic
+from app.models import Item, ItemCreate, Venda, VendaCreate, VendaPublic, VendasPublic
 
 router = APIRouter(prefix="/vendas", tags=["vendas"])
 
 
 @router.get("")
-def read_vendas(session: SessionDep) -> list[VendaPublic]:
-    vendas = session.exec(select(Venda)).all()
-    return vendas
+def read_vendas(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> VendasPublic:
+    count_statement = select(func.count()).select_from(Venda)
+    statement = select(Venda)
+    if query:
+        where_expression = Venda.id.like(f"%{query}%")
+        statement = statement.where(where_expression)
+        count_statement = count_statement.where(where_expression)
+    statement = statement.offset(skip).limit(limit)
+    data = session.exec(statement).all()
+    count = session.exec(count_statement).one()
+    print(data)
+    return VendasPublic(data=data, count=count)
 
 
 @router.get("/{venda_id}")

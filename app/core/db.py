@@ -28,14 +28,22 @@ def populate_tables(session: Session) -> None:
 
     session.commit()
 
-    compra1 = models.Compra(data_compra=datetime.now(), valor=10, categoria="insumo", fornecedor_id=1)
-    compra2 = models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2)
+    compras = []
+    compras.append(models.Compra(data_compra=datetime.now(), valor=10, categoria="insumo", fornecedor_id=1))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
+    compras.append(models.Compra(data_compra=datetime.now(), valor=500, categoria="combustivel", fornecedor_id=2))
     venda1 = models.Venda(data_venda=datetime(2024, 10, 30), cliente_id=1)
     item1 = models.Item(preco_unitario=10, quantidade=5, produto_id=1, venda_id=1)
     item2 = models.Item(preco_unitario=50, quantidade=1, produto_id=2, venda_id=1)
 
-    session.add(compra1)
-    session.add(compra2)
+    session.add_all(compras)
     session.add(venda1)
     session.add(item1)
     session.add(item2)

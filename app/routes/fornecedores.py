@@ -1,22 +1,32 @@
-
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import select
+from sqlmodel import func, select
 
 from app.dependencies import SessionDep
 from app.models import (
     Fornecedor,
     FornecedorCreate,
     FornecedorPublic,
+    FornecedoresPublic,
 )
 
 router = APIRouter(prefix="/fornecedores", tags=["fornecedores"])
 
 
 @router.get("")
-def read_fornecedores(session: SessionDep) -> list[FornecedorPublic]:
-    fornecedores = session.exec(select(Fornecedor)).all()
-    return fornecedores
+def read_fornecedores(
+    session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10
+) -> FornecedoresPublic:
+    count_statement = select(func.count()).select_from(Fornecedor)
+    statement = select(Fornecedor)
+    if query:
+        where_expression = Fornecedor.nome.like(f"%{query}%")
+        statement = statement.where(where_expression)
+        count_statement = count_statement.where(where_expression)
+    statement = statement.offset(skip).limit(limit)
+    data = session.exec(statement).all()
+    count = session.exec(count_statement).one()
+    return FornecedoresPublic(data=data, count=count)
 
 
 @router.get("/{fornecedor_id}")
@@ -28,9 +38,7 @@ def read_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic
 
 
 @router.post("/")
-def cadastrar_fornecedor(
-    fornecedor: FornecedorCreate, session: SessionDep
-) -> FornecedorPublic:
+def cadastrar_fornecedor(fornecedor: FornecedorCreate, session: SessionDep) -> FornecedorPublic:
     db_fornecedor = Fornecedor.model_validate(fornecedor)
     try:
         session.add(db_fornecedor)
