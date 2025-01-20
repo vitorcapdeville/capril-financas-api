@@ -18,7 +18,6 @@ def read_vendas(session: SessionDep, query: str | None = None, skip: int = 0, li
     statement = statement.offset(skip).limit(limit)
     data = session.exec(statement).all()
     count = session.exec(count_statement).one()
-    print(data)
     return VendasPublic(data=data, count=count)
 
 
