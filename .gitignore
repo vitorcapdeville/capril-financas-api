@@ -17,9 +17,10 @@ ENV/
 *.sqlite
 
 # Configurações do VS Code
-.vscode/
 
 .env
 
 notas.txt
 capril.db
+
+.python_packages
