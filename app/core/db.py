@@ -6,7 +6,7 @@ from app import crud, models
 from app.core.config import settings
 from app.models import User, UserCreate
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
 
 def create_tables():
