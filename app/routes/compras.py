@@ -12,7 +12,7 @@ from app.models import (
 router = APIRouter(prefix="/compras", tags=["compras"])
 
 
-@router.get("")
+@router.get("", operation_id="read_compras")
 def read_compras(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> ComprasPublic:
     count_statement = select(func.count()).select_from(Compra)
     statement = select(Compra)
@@ -26,7 +26,7 @@ def read_compras(session: SessionDep, query: str | None = None, skip: int = 0, l
     return ComprasPublic(data=data, count=count)
 
 
-@router.get("/{compra_id}")
+@router.get("/{compra_id}", operation_id="read_compra_by_id")
 def read_compra(compra_id: int, session: SessionDep) -> CompraPublic:
     compra = session.get(Compra, compra_id)
     if not compra:
@@ -34,7 +34,7 @@ def read_compra(compra_id: int, session: SessionDep) -> CompraPublic:
     return compra
 
 
-@router.post("")
+@router.post("", operation_id="create_compra")
 def cadastrar_compra(compra: CompraCreate, session: SessionDep) -> CompraPublic:
     db_compra = Compra.model_validate(compra)
     session.add(db_compra)

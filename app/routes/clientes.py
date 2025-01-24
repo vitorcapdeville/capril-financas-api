@@ -8,7 +8,7 @@ from app.models import Cliente, ClienteCreate, ClientePublic, ClientesPublic
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 
-@router.get("")
+@router.get("", operation_id="read_clientes")
 def read_clientes(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> ClientesPublic:
     count_statement = select(func.count()).select_from(Cliente)
     statement = select(Cliente)
@@ -22,7 +22,7 @@ def read_clientes(session: SessionDep, query: str | None = None, skip: int = 0, 
     return ClientesPublic(data=data, count=count)
 
 
-@router.get("/{cliente_id}")
+@router.get("/{cliente_id}", operation_id="read_cliente_by_id")
 def read_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
@@ -30,7 +30,7 @@ def read_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
     return cliente
 
 
-@router.post("")
+@router.post("", operation_id="create_cliente")
 def cadastrar_cliente(cliente: ClienteCreate, session: SessionDep) -> ClientePublic:
     db_cliente = Cliente.model_validate(cliente)
     try:
@@ -42,7 +42,7 @@ def cadastrar_cliente(cliente: ClienteCreate, session: SessionDep) -> ClientePub
     return db_cliente
 
 
-@router.delete("/{cliente_id}")
+@router.delete("/{cliente_id}", operation_id="delete_cliente")
 def delete_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:

@@ -7,7 +7,7 @@ from app.models import Item, ItemCreate, Venda, VendaCreate, VendaPublic, Vendas
 router = APIRouter(prefix="/vendas", tags=["vendas"])
 
 
-@router.get("")
+@router.get("", operation_id="read_vendas")
 def read_vendas(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> VendasPublic:
     count_statement = select(func.count()).select_from(Venda)
     statement = select(Venda)
@@ -21,7 +21,7 @@ def read_vendas(session: SessionDep, query: str | None = None, skip: int = 0, li
     return VendasPublic(data=data, count=count)
 
 
-@router.get("/{venda_id}")
+@router.get("/{venda_id}", operation_id="read_venda_by_id")
 def read_venda(venda_id: int, session: SessionDep) -> VendaPublic:
     venda = session.get(Venda, venda_id)
     if not venda:
@@ -29,7 +29,7 @@ def read_venda(venda_id: int, session: SessionDep) -> VendaPublic:
     return venda
 
 
-@router.post("")
+@router.post("", operation_id="create_venda")
 def cadastrar_venda(venda: VendaCreate, items: list[ItemCreate], session: SessionDep) -> VendaPublic:
     db_venda = Venda.model_validate(venda)
     db_items = [Item.model_validate(item) for item in items]

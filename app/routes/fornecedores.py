@@ -13,7 +13,7 @@ from app.models import (
 router = APIRouter(prefix="/fornecedores", tags=["fornecedores"])
 
 
-@router.get("")
+@router.get("", operation_id="read_fornecedores")
 def read_fornecedores(
     session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10
 ) -> FornecedoresPublic:
@@ -29,7 +29,7 @@ def read_fornecedores(
     return FornecedoresPublic(data=data, count=count)
 
 
-@router.get("/{fornecedor_id}")
+@router.get("/{fornecedor_id}", operation_id="read_fornecedor_by_id")
 def read_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic:
     fornecedor = session.get(Fornecedor, fornecedor_id)
     if not fornecedor:
@@ -37,7 +37,7 @@ def read_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic
     return fornecedor
 
 
-@router.post("")
+@router.post("", operation_id="create_fornecedor")
 def cadastrar_fornecedor(fornecedor: FornecedorCreate, session: SessionDep) -> FornecedorPublic:
     db_fornecedor = Fornecedor.model_validate(fornecedor)
     try:
@@ -49,7 +49,7 @@ def cadastrar_fornecedor(fornecedor: FornecedorCreate, session: SessionDep) -> F
     return db_fornecedor
 
 
-@router.delete("/{fornecedor_id}")
+@router.delete("/{fornecedor_id}", operation_id="delete_fornecedor")
 def delete_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic:
     fornecedor = session.get(Fornecedor, fornecedor_id)
     if not fornecedor:

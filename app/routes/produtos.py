@@ -8,7 +8,7 @@ from app.models import Produto, ProdutoCreate, ProdutoPublic, ProdutosPublic
 router = APIRouter(prefix="/produtos", tags=["produtos"])
 
 
-@router.get("")
+@router.get("", operation_id="read_produtos")
 def read_produtos(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> ProdutosPublic:
     count_statement = select(func.count()).select_from(Produto)
     statement = select(Produto)
@@ -22,7 +22,7 @@ def read_produtos(session: SessionDep, query: str | None = None, skip: int = 0, 
     return ProdutosPublic(data=data, count=count)
 
 
-@router.get("/{produto_id}")
+@router.get("/{produto_id}", operation_id="read_produto_by_id")
 def read_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
     produto = session.get(Produto, produto_id)
     if not produto:
@@ -30,7 +30,7 @@ def read_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
     return produto
 
 
-@router.post("")
+@router.post("", operation_id="create_produto")
 def cadastrar_produto(produto: ProdutoCreate, session: SessionDep) -> ProdutoPublic:
     db_produto = Produto.model_validate(produto)
     try:
@@ -42,7 +42,7 @@ def cadastrar_produto(produto: ProdutoCreate, session: SessionDep) -> ProdutoPub
     return db_produto
 
 
-@router.delete("/{produto_id}")
+@router.delete("/{produto_id}", operation_id="delete_produto")
 def delete_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
     produto = session.get(Produto, produto_id)
     if not produto:
