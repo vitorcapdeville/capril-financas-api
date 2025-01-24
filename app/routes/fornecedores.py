@@ -37,7 +37,7 @@ def read_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic
     return fornecedor
 
 
-@router.post("/")
+@router.post("")
 def cadastrar_fornecedor(fornecedor: FornecedorCreate, session: SessionDep) -> FornecedorPublic:
     db_fornecedor = Fornecedor.model_validate(fornecedor)
     try:

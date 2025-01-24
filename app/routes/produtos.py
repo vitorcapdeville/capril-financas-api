@@ -30,7 +30,7 @@ def read_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
     return produto
 
 
-@router.post("/")
+@router.post("")
 def cadastrar_produto(produto: ProdutoCreate, session: SessionDep) -> ProdutoPublic:
     db_produto = Produto.model_validate(produto)
     try:

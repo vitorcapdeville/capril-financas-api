@@ -30,7 +30,7 @@ def read_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
     return cliente
 
 
-@router.post("/")
+@router.post("")
 def cadastrar_cliente(cliente: ClienteCreate, session: SessionDep) -> ClientePublic:
     db_cliente = Cliente.model_validate(cliente)
     try:

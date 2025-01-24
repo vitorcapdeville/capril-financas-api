@@ -29,7 +29,7 @@ def read_venda(venda_id: int, session: SessionDep) -> VendaPublic:
     return venda
 
 
-@router.post("/")
+@router.post("")
 def cadastrar_venda(venda: VendaCreate, items: list[ItemCreate], session: SessionDep) -> VendaPublic:
     db_venda = Venda.model_validate(venda)
     db_items = [Item.model_validate(item) for item in items]
