@@ -22,9 +22,9 @@ def read_produtos(session: SessionDep, query: str | None = None, skip: int = 0, 
     return ProdutosPublic(data=data, count=count)
 
 
-@router.get("/{produto_id}", operation_id="read_produto_by_id")
-def read_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
-    produto = session.get(Produto, produto_id)
+@router.get("/{id}", operation_id="read_produto_by_id")
+def read_produto(id: int, session: SessionDep) -> ProdutoPublic:
+    produto = session.get(Produto, id)
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
     return produto
@@ -42,9 +42,9 @@ def cadastrar_produto(produto: ProdutoCreate, session: SessionDep) -> ProdutoPub
     return db_produto
 
 
-@router.delete("/{produto_id}", operation_id="delete_produto")
-def delete_produto(produto_id: int, session: SessionDep) -> ProdutoPublic:
-    produto = session.get(Produto, produto_id)
+@router.delete("/{id}", operation_id="delete_produto")
+def delete_produto(id: int, session: SessionDep) -> ProdutoPublic:
+    produto = session.get(Produto, id)
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
     session.delete(produto)

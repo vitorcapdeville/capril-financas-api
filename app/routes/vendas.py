@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from sqlmodel import select, func
+from sqlmodel import func, select
 
 from app.dependencies import SessionDep
 from app.models import Item, ItemCreate, Venda, VendaCreate, VendaPublic, VendasPublic
@@ -21,9 +21,9 @@ def read_vendas(session: SessionDep, query: str | None = None, skip: int = 0, li
     return VendasPublic(data=data, count=count)
 
 
-@router.get("/{venda_id}", operation_id="read_venda_by_id")
-def read_venda(venda_id: int, session: SessionDep) -> VendaPublic:
-    venda = session.get(Venda, venda_id)
+@router.get("/{id}", operation_id="read_venda_by_id")
+def read_venda(id: int, session: SessionDep) -> VendaPublic:
+    venda = session.get(Venda, id)
     if not venda:
         raise HTTPException(status_code=404, detail="Venda não encontrada.")
     return venda

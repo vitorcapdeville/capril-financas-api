@@ -22,9 +22,9 @@ def read_clientes(session: SessionDep, query: str | None = None, skip: int = 0, 
     return ClientesPublic(data=data, count=count)
 
 
-@router.get("/{cliente_id}", operation_id="read_cliente_by_id")
-def read_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
-    cliente = session.get(Cliente, cliente_id)
+@router.get("/{id}", operation_id="read_cliente_by_id")
+def read_cliente(id: int, session: SessionDep) -> ClientePublic:
+    cliente = session.get(Cliente, id)
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")
     return cliente
@@ -42,9 +42,9 @@ def cadastrar_cliente(cliente: ClienteCreate, session: SessionDep) -> ClientePub
     return db_cliente
 
 
-@router.delete("/{cliente_id}", operation_id="delete_cliente")
-def delete_cliente(cliente_id: int, session: SessionDep) -> ClientePublic:
-    cliente = session.get(Cliente, cliente_id)
+@router.delete("/{id}", operation_id="delete_cliente")
+def delete_cliente(id: int, session: SessionDep) -> ClientePublic:
+    cliente = session.get(Cliente, id)
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")
     session.delete(cliente)

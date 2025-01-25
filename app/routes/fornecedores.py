@@ -29,9 +29,9 @@ def read_fornecedores(
     return FornecedoresPublic(data=data, count=count)
 
 
-@router.get("/{fornecedor_id}", operation_id="read_fornecedor_by_id")
-def read_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic:
-    fornecedor = session.get(Fornecedor, fornecedor_id)
+@router.get("/{id}", operation_id="read_fornecedor_by_id")
+def read_fornecedor(id: int, session: SessionDep) -> FornecedorPublic:
+    fornecedor = session.get(Fornecedor, id)
     if not fornecedor:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")
     return fornecedor
@@ -49,9 +49,9 @@ def cadastrar_fornecedor(fornecedor: FornecedorCreate, session: SessionDep) -> F
     return db_fornecedor
 
 
-@router.delete("/{fornecedor_id}", operation_id="delete_fornecedor")
-def delete_fornecedor(fornecedor_id: int, session: SessionDep) -> FornecedorPublic:
-    fornecedor = session.get(Fornecedor, fornecedor_id)
+@router.delete("/{id}", operation_id="delete_fornecedor")
+def delete_fornecedor(id: int, session: SessionDep) -> FornecedorPublic:
+    fornecedor = session.get(Fornecedor, id)
     if not fornecedor:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")
     session.delete(fornecedor)

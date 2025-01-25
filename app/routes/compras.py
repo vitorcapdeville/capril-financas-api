@@ -26,9 +26,9 @@ def read_compras(session: SessionDep, query: str | None = None, skip: int = 0, l
     return ComprasPublic(data=data, count=count)
 
 
-@router.get("/{compra_id}", operation_id="read_compra_by_id")
-def read_compra(compra_id: int, session: SessionDep) -> CompraPublic:
-    compra = session.get(Compra, compra_id)
+@router.get("/{id}", operation_id="read_compra_by_id")
+def read_compra(id: int, session: SessionDep) -> CompraPublic:
+    compra = session.get(Compra, id)
     if not compra:
         raise HTTPException(status_code=404, detail="Compra não encontrada.")
     return compra
