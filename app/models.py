@@ -16,6 +16,8 @@ class FornecedorCreate(FornecedorBase):
 class Fornecedor(FornecedorBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
+    # compras: list["Compra"] = Relationship(back_populates="fornecedor")
+
 
 class FornecedorPublic(FornecedorBase):
     id: int
@@ -30,7 +32,6 @@ class CompraBase(SQLModel):
     data_compra: datetime
     valor: float
     categoria: str
-    fornecedor_id: int
 
 
 class CompraCreate(CompraBase):
@@ -41,9 +42,12 @@ class Compra(CompraBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     fornecedor_id: Optional[int] = Field(default=None, foreign_key="fornecedor.id")
 
+    fornecedor: "Fornecedor" = Relationship()
+
 
 class CompraPublic(CompraBase):
     id: int
+    fornecedor: FornecedorPublic
 
 
 class ComprasPublic(SQLModel):
@@ -100,7 +104,6 @@ class ClientesPublic(SQLModel):
 class ItemBase(SQLModel):
     preco_unitario: float
     quantidade: int
-    produto_id: int
 
 
 class ItemCreate(ItemBase):
@@ -113,17 +116,18 @@ class Item(ItemBase, table=True):
     produto_id: int = Field(foreign_key="produto.id")
     venda_id: Optional[int] = Field(default=None, foreign_key="venda.id")
 
-    venda: "Venda" = Relationship(back_populates="items")
+    produto: "Produto" = Relationship()
 
 
 class ItemPublic(ItemBase):
     id: int
 
+    produto: ProdutoPublic
+
 
 class VendaBase(SQLModel):
     data_venda: datetime
     data_pagamento: Optional[datetime] = None
-    cliente_id: int
 
 
 class VendaCreate(VendaBase):
@@ -134,13 +138,15 @@ class Venda(VendaBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     cliente_id: Optional[int] = Field(default=None, foreign_key="cliente.id")
 
-    items: list["Item"] = Relationship(back_populates="venda")
+    items: list["Item"] = Relationship()
+    cliente: "Cliente" = Relationship()
 
 
 class VendaPublic(VendaBase):
     id: int
 
-    items: list[Item]
+    items: list[ItemPublic]
+    cliente: ClientePublic
 
 
 class VendasPublic(SQLModel):
