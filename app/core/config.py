@@ -1,15 +1,14 @@
 import secrets
 import warnings
 from typing import Annotated, Any, Literal
+from urllib.parse import quote_plus
 
 from pydantic import (
     AnyUrl,
     BeforeValidator,
-    PostgresDsn,
     computed_field,
     model_validator,
 )
-from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 from typing_extensions import Self
@@ -55,14 +54,15 @@ class Settings(BaseSettings):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
-        return MultiHostUrl.build(
-            scheme="postgresql+psycopg",
+    def SQLALCHEMY_DATABASE_URI(self) -> URL:
+        return URL.create(
+            "mssql+pyodbc",
             username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD,
+            password=quote_plus(self.POSTGRES_PASSWORD),
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
-            path=self.POSTGRES_DB,
+            database=self.POSTGRES_DB,
+            query=dict(driver="ODBC Driver 18 for SQL Server"),
         )
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
