@@ -9,3 +9,5 @@ test
 .env
 __pycache__
 notas.txt
+Dockerfile
+docker-compose.yaml
