@@ -30,10 +30,10 @@ def read_venda(id: int, session: SessionDep) -> VendaPublic:
 
 
 @router.post("", operation_id="create_venda")
-def cadastrar_venda(venda: VendaCreate, items: list[ItemCreate], session: SessionDep) -> VendaPublic:
+def cadastrar_venda(venda: VendaCreate, session: SessionDep) -> VendaPublic:
+    db_items = [Item.model_validate(item) for item in venda.items]
+    venda.items = db_items
     db_venda = Venda.model_validate(venda)
-    db_items = [Item.model_validate(item) for item in items]
-    db_venda.items = db_items
     session.add(db_venda)
     session.commit()
     session.refresh(db_venda)

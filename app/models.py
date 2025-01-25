@@ -35,7 +35,7 @@ class CompraBase(SQLModel):
 
 
 class CompraCreate(CompraBase):
-    pass
+    fornecedor_id: int
 
 
 class Compra(CompraBase, table=True):
@@ -107,7 +107,7 @@ class ItemBase(SQLModel):
 
 
 class ItemCreate(ItemBase):
-    pass
+    produto_id: int
 
 
 class Item(ItemBase, table=True):
@@ -117,6 +117,7 @@ class Item(ItemBase, table=True):
     venda_id: Optional[int] = Field(default=None, foreign_key="venda.id")
 
     produto: "Produto" = Relationship()
+    venda: "Venda" = Relationship(back_populates="items")
 
 
 class ItemPublic(ItemBase):
@@ -131,14 +132,16 @@ class VendaBase(SQLModel):
 
 
 class VendaCreate(VendaBase):
-    pass
+    cliente_id: int
+
+    items: list[ItemCreate]
 
 
 class Venda(VendaBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     cliente_id: Optional[int] = Field(default=None, foreign_key="cliente.id")
 
-    items: list["Item"] = Relationship()
+    items: list["Item"] = Relationship(back_populates="venda")
     cliente: "Cliente" = Relationship()
 
 
