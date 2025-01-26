@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> URL:
+        query = dict(driver="ODBC Driver 18 for SQL Server")
+        if self.ENVIRONMENT == "local":
+            query = dict(driver="ODBC Driver 18 for SQL Server", TrustServerCertificate="yes",Encrypt="no")
+        
         return URL.create(
             "mssql+pyodbc",
             username=self.POSTGRES_USER,
@@ -62,7 +66,7 @@ class Settings(BaseSettings):
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
             database=self.POSTGRES_DB,
-            query=dict(driver="ODBC Driver 18 for SQL Server"),
+            query=query,
         )
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
@@ -77,9 +81,9 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _enforce_non_default_secrets(self) -> Self:
-        # self._check_default_secret("SECRET_KEY", self.SECRET_KEY)
-        # self._check_default_secret("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
-        # self._check_default_secret("FIRST_SUPERUSER_PASSWORD", self.FIRST_SUPERUSER_PASSWORD)
+        self._check_default_secret("SECRET_KEY", self.SECRET_KEY)
+        self._check_default_secret("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
+        self._check_default_secret("FIRST_SUPERUSER_PASSWORD", self.FIRST_SUPERUSER_PASSWORD)
 
         return self
 

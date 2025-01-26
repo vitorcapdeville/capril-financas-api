@@ -33,6 +33,8 @@ RUN pip install pyodbc
 # Copie o código do aplicativo para o contêiner
 COPY . /app
 
+# RUN python ./app/core/db.py
+
 # # Exponha a porta em que a aplicação será executada
 # EXPOSE 8000
 

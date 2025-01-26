@@ -67,3 +67,9 @@ def init_db(session: Session) -> None:
     create_tables()
     populate_tables(session)
     create_first_user(session)
+
+
+if __name__ == "__main__":
+    with Session(engine) as session:
+        init_db(session)
+        print("Tables created")
