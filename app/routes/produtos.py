@@ -3,23 +3,30 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import func, select
 
 from app.dependencies import SessionDep
-from app.models import Produto, ProdutoCreate, ProdutoPublic, ProdutosPublic
+from app.models import Produto, ProdutoCreate, ProdutoPublic
 
 router = APIRouter(prefix="/produtos", tags=["produtos"])
 
 
 @router.get("", operation_id="read_produtos")
-def read_produtos(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> ProdutosPublic:
-    count_statement = select(func.count()).select_from(Produto)
+def read_produtos(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> list[ProdutoPublic]:
     statement = select(Produto)
     if query:
         where_expression = Produto.nome.like(f"%{query}%")
         statement = statement.where(where_expression)
-        count_statement = count_statement.where(where_expression)
     statement = statement.order_by(Produto.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
+    return data
+
+
+@router.get("/count", operation_id="count_produtos")
+def count_produtos(session: SessionDep, query: str | None = None) -> int:
+    count_statement = select(func.count()).select_from(Produto)
+    if query:
+        where_expression = Produto.nome.like(f"%{query}%")
+        count_statement = count_statement.where(where_expression)
     count = session.exec(count_statement).one()
-    return ProdutosPublic(data=data, count=count)
+    return count
 
 
 @router.get("/{id}", operation_id="read_produto_by_id")

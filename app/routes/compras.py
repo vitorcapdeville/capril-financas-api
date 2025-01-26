@@ -6,24 +6,30 @@ from app.models import (
     Compra,
     CompraCreate,
     CompraPublic,
-    ComprasPublic,
 )
 
 router = APIRouter(prefix="/compras", tags=["compras"])
 
 
 @router.get("", operation_id="read_compras")
-def read_compras(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> ComprasPublic:
-    count_statement = select(func.count()).select_from(Compra)
+def read_compras(session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10) -> list[CompraPublic]:
     statement = select(Compra)
     if query:
         where_expression = Compra.categoria.like(f"%{query}%")
         statement = statement.where(where_expression)
-        count_statement = count_statement.where(where_expression)
     statement = statement.order_by(Compra.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
+    return data
+
+
+@router.get("/count", operation_id="count_compras")
+def count_compras(session: SessionDep, query: str | None = None) -> int:
+    count_statement = select(func.count()).select_from(Compra)
+    if query:
+        where_expression = Compra.categoria.like(f"%{query}%")
+        count_statement = count_statement.where(where_expression)
     count = session.exec(count_statement).one()
-    return ComprasPublic(data=data, count=count)
+    return count
 
 
 @router.get("/{id}", operation_id="read_compra_by_id")

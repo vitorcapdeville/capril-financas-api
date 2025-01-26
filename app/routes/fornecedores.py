@@ -7,7 +7,6 @@ from app.models import (
     Fornecedor,
     FornecedorCreate,
     FornecedorPublic,
-    FornecedoresPublic,
 )
 
 router = APIRouter(prefix="/fornecedores", tags=["fornecedores"])
@@ -16,17 +15,24 @@ router = APIRouter(prefix="/fornecedores", tags=["fornecedores"])
 @router.get("", operation_id="read_fornecedores")
 def read_fornecedores(
     session: SessionDep, query: str | None = None, skip: int = 0, limit: int = 10
-) -> FornecedoresPublic:
-    count_statement = select(func.count()).select_from(Fornecedor)
+) -> list[FornecedorPublic]:
     statement = select(Fornecedor)
     if query:
         where_expression = Fornecedor.nome.like(f"%{query}%")
         statement = statement.where(where_expression)
-        count_statement = count_statement.where(where_expression)
     statement = statement.order_by(Fornecedor.id).offset(skip).limit(limit)
     data = session.exec(statement).all()
+    return data
+
+
+@router.get("/count", operation_id="count_fornecedores")
+def count_fornecedores(session: SessionDep, query: str | None = None) -> int:
+    count_statement = select(func.count()).select_from(Fornecedor)
+    if query:
+        where_expression = Fornecedor.nome.like(f"%{query}%")
+        count_statement = count_statement.where(where_expression)
     count = session.exec(count_statement).one()
-    return FornecedoresPublic(data=data, count=count)
+    return count
 
 
 @router.get("/{id}", operation_id="read_fornecedor_by_id")
