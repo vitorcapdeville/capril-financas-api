@@ -1,5 +1,10 @@
-from fastapi import Depends, FastAPI
+import asyncio
+import time
+
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.status import HTTP_504_GATEWAY_TIMEOUT
 
 from app.core.config import settings
 from app.dependencies import get_current_user
@@ -11,6 +16,24 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
 ]
+
+
+@app.middleware("http")
+async def timeout_middleware(request: Request, call_next):
+    try:
+        start_time = time.time()
+        return await asyncio.wait_for(call_next(request), timeout=8)
+
+    except asyncio.TimeoutError:
+        process_time = time.time() - start_time
+        return JSONResponse(
+            {
+                "detail": "Tempo limite de processamento atingido. Por favor, tente novamente.",
+                "processing_time": process_time,
+            },
+            status_code=HTTP_504_GATEWAY_TIMEOUT,
+        )
+
 
 # Set all CORS enabled origins
 if settings.all_cors_origins:

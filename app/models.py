@@ -6,7 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 
 class FornecedorBase(SQLModel):
-    nome: str = Field(unique=True, max_length=50)
+    nome: str = Field(unique=True, min_length=1, max_length=50)
 
 
 class FornecedorCreate(FornecedorBase):
@@ -23,15 +23,10 @@ class FornecedorPublic(FornecedorBase):
     id: int
 
 
-class FornecedoresPublic(SQLModel):
-    data: list[FornecedorPublic]
-    count: int
-
-
 class CompraBase(SQLModel):
     data_compra: datetime
-    valor: float
-    categoria: str
+    valor: float = Field(gt=0)
+    categoria: str = Field(min_length=1)
 
 
 class CompraCreate(CompraBase):
@@ -50,14 +45,9 @@ class CompraPublic(CompraBase):
     fornecedor: FornecedorPublic
 
 
-class ComprasPublic(SQLModel):
-    data: list[CompraPublic]
-    count: int
-
-
 class ProdutoBase(SQLModel):
-    nome: str
-    peso_em_gramas: float
+    nome: str = Field(min_length=1)
+    peso_em_gramas: float = Field(gt=0)
 
 
 class ProdutoCreate(ProdutoBase):
@@ -72,16 +62,11 @@ class ProdutoPublic(ProdutoBase):
     id: int
 
 
-class ProdutosPublic(SQLModel):
-    data: list[ProdutoPublic]
-    count: int
-
-
 class ClienteBase(SQLModel):
-    nome: str
-    email: str
-    categoria: str
-    endereco: str
+    nome: str = Field(min_length=1)
+    email: EmailStr = Field(min_length=1)
+    categoria: str = Field(min_length=1)
+    endereco: str = Field(min_length=1)
 
 
 class ClienteCreate(ClienteBase):
@@ -96,14 +81,9 @@ class ClientePublic(ClienteBase):
     id: int
 
 
-class ClientesPublic(SQLModel):
-    data: list[ClientePublic]
-    count: int
-
-
 class ItemBase(SQLModel):
-    preco_unitario: float
-    quantidade: int
+    preco_unitario: float = Field(gt=0)
+    quantidade: int = Field(gt=0)
 
 
 class ItemCreate(ItemBase):
@@ -152,18 +132,11 @@ class VendaPublic(VendaBase):
     cliente: ClientePublic
 
 
-class VendasPublic(SQLModel):
-    data: list[VendaPublic]
-    count: int
-
-
-# JSON payload containing access token
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
 
 
-# Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
     email: str | None = None
@@ -176,34 +149,14 @@ class UserBase(SQLModel):
     full_name: str | None = Field(default=None, max_length=255)
 
 
-# Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=40)
 
 
-class UserRegister(SQLModel):
-    email: EmailStr = Field(max_length=255)
-    password: str = Field(min_length=8, max_length=40)
-    full_name: str | None = Field(default=None, max_length=255)
-
-
-# Properties to receive via API on update, all are optional
-class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
-    password: str | None = Field(default=None, min_length=8, max_length=40)
-
-
-class UpdatePassword(SQLModel):
-    current_password: str = Field(min_length=8, max_length=40)
-    new_password: str = Field(min_length=8, max_length=40)
-
-
-# Database model, database table inferred from class name
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
 
 
-# Properties to return via API, id is always required
 class UserPublic(UserBase):
     id: int

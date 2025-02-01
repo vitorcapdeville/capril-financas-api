@@ -9,6 +9,8 @@ services:
       - capril-financas-network
     env_file:
       - .env
+    environment:
+      - POSTGRES_SERVER=db
 networks:
   capril-financas-network:
     external: true
