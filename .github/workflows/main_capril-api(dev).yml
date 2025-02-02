@@ -78,6 +78,4 @@ jobs:
         id: deploy-to-function
         with:
           app-name: 'capril-api'
-          slot-name: 'dev'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          
