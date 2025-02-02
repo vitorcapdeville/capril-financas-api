@@ -81,3 +81,5 @@ jobs:
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           respect-funcignore: true
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
