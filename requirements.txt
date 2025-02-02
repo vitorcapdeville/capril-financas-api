@@ -6,7 +6,6 @@ pydantic_settings
 sqlalchemy-utils
 pyjwt<3.0.0,>=2.8.0
 passlib[bcrypt]<2.0.0,>=1.7.4
-# psycopg[binary]<4.0.0,>=3.1.13
 pyodbc
 azure-functions
 email-validator
