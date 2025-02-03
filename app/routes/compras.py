@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import func, select
 
 from app.dependencies import SessionDep
@@ -47,3 +48,16 @@ def cadastrar_compra(compra: CompraCreate, session: SessionDep) -> CompraPublic:
     session.commit()
     session.refresh(db_compra)
     return db_compra
+
+
+@router.delete("/{id}", operation_id="delete_compra")
+def delete_compra(id: int, session: SessionDep):
+    compra = session.get(Compra, id)
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra não encontrado.")
+    compra.fornecedor = None
+    try:
+        session.delete(compra)
+        session.commit()
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Não é possível deletar essa compra.")

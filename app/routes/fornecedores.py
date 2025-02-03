@@ -60,6 +60,11 @@ def delete_fornecedor(id: int, session: SessionDep) -> FornecedorPublic:
     fornecedor = session.get(Fornecedor, id)
     if not fornecedor:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado.")
-    session.delete(fornecedor)
-    session.commit()
+    try:
+        session.delete(fornecedor)
+        session.commit()
+    except IntegrityError:
+        raise HTTPException(
+            status_code=409, detail="Não é possível deletar um fornecedor que possui compras associadas."
+        )
     return fornecedor
