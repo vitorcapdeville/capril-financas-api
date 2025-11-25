@@ -3,12 +3,7 @@ import warnings
 from typing import Annotated, Any, Literal
 from urllib.parse import quote_plus
 
-from pydantic import (
-    AnyUrl,
-    BeforeValidator,
-    computed_field,
-    model_validator,
-)
+from pydantic import AnyUrl, BeforeValidator, computed_field, model_validator, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 from typing_extensions import Self
@@ -25,7 +20,7 @@ def parse_cors(v: Any) -> list[str] | str:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         # Use top level .env file (one level above ./backend/)
-        # env_file=".env",
+        env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
     )
@@ -54,19 +49,14 @@ class Settings(BaseSettings):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def SQLALCHEMY_DATABASE_URI(self) -> URL:
-        query = dict(driver="ODBC Driver 18 for SQL Server")
-        if self.ENVIRONMENT == "local":
-            query = dict(driver="ODBC Driver 18 for SQL Server", TrustServerCertificate="yes",Encrypt="no")
-        
-        return URL.create(
-            "mssql+pyodbc",
+    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        return PostgresDsn.build(
+            scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
-            password=quote_plus(self.POSTGRES_PASSWORD),
+            password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
-            database=self.POSTGRES_DB,
-            query=query,
+            path=self.POSTGRES_DB,
         )
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:

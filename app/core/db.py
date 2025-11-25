@@ -6,7 +6,7 @@ from app import crud, models
 from app.core.config import settings
 from app.models import User, UserCreate
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
 
 def create_tables():
@@ -67,9 +67,3 @@ def init_db(session: Session) -> None:
     create_tables()
     populate_tables(session)
     create_first_user(session)
-
-
-if __name__ == "__main__":
-    with Session(engine) as session:
-        init_db(session)
-        print("Tables created")

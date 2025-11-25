@@ -26,9 +26,15 @@ Para executar os testes, execute o seguinte comando:
 pytest
 ```
 
-## Contribuição
+## env
 
-Pull requests são bem-vindos. Para mudanças importantes, por favor, abra uma issue primeiro para discutir o que você gostaria de mudar.
+POSTGRES_SERVER=
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_PORT=
+FIRST_SUPERUSER=
+FIRST_SUPERUSER_PASSWORD=
 
 ## Licença
 
